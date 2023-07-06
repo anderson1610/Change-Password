@@ -36,22 +36,30 @@ def month():
     return today.strftime("%b")
 
 def start_password_change():
-    number_room = room_entry.get()
-    machine_start = int(start_entry.get())
-    machine_finish = int(finish_entry.get())
-    user = user_var.get()
-    password = password_entry.get()
+    rooms = [21, 22, 23, 31, 32, 33, 41, 42, 43, 51, 52, 53, 61, 62, 63] #Lista de salas da empresa
 
-    log_file = create_log_file(number_room)
+    if int(room_entry.get()) in rooms:
+        number_room = room_entry.get()
+        machine_start = int(start_entry.get())
+        machine_finish = int(finish_entry.get())
+        user = user_var.get()
+        password = password_entry.get()
 
-    while machine_start <= machine_finish:
-        pings = [change_user_password(number_room, machine_start, user, password)]
-        with open(log_file, "a", encoding='utf8') as arquivo:
-            for p in pings:
-                arquivo.write(f'{p}\n')
-        machine_start += 1
+        log_file = create_log_file(number_room)
 
-    messagebox.showinfo("Concluído", "Troca de senha concluída com sucesso.")
+        while machine_start <= machine_finish:
+            pings = [change_user_password(number_room, machine_start, user, password)]
+            with open(log_file, "a", encoding='utf8') as arquivo:
+                for p in pings:
+                    arquivo.write(f'{p}\n')
+            machine_start += 1
+
+        messagebox.showinfo("Concluído", "Troca de senha concluída com sucesso.")
+
+    else:
+        messagebox.showinfo("Erro", "Sala não encontrada")
+
+    
 
 # Criar a janela principal
 window = tk.Tk()
