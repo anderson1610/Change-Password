@@ -4,6 +4,41 @@ from datetime import date, datetime
 import locale
 import tkinter as tk
 from tkinter import messagebox
+import shutil
+import os
+
+def verify_psexec():
+
+    pasta_especifica = 'C:/Windows/System32'  # Substitua pelo caminho da pasta específica que deseja verificar
+    nome_arquivo = 'PsExec.exe'      # Substitua pelo nome do arquivo que deseja verificar
+    caminho_arquivo = os.path.join(pasta_especifica, nome_arquivo)
+    path_psexec = 'C:/Users/Administrator/Desktop/PsExec.exe'
+
+
+    if os.path.exists(caminho_arquivo):
+        print(f"O arquivo {nome_arquivo} existe na pasta {pasta_especifica}.")
+        return 1
+    else:
+        if os.path.exists(path_psexec):
+            print("Arquivo PsExec encontrado")
+            # Caminho do arquivo .exe original
+            caminho_original = 'C:/Users/Administrator/Desktop/PsExec.exe'
+
+            # Caminho para onde deseja copiar o arquivo .exe
+            caminho_destino = 'C:/Windows/System32/PsExec.exe'
+
+            # Copiar o arquivo .exe para o destino desejado
+            shutil.copy(caminho_original, caminho_destino)
+
+            # Executar o arquivo .exe
+            subprocess.run(caminho_destino)  
+
+            return 1         
+        
+        else:
+            messagebox.showinfo("ERRO!", "Coloque o arquivo PsExec.exe na area de trabalho para realizarmos a instalação")
+            return 2
+        
 
 def create_log_file(name):
     current_time = datetime.now()
@@ -27,8 +62,8 @@ def change_user_password(room, machine, name_user, new_password):
 
     # Executa o comando no prompt de comando
     txt = subprocess.run(comando, stdout=subprocess.PIPE)
-
-    return f"maquina 10.10.{room}.{machine} senha alterada com sucesso : {new_password}${room}{machine_password} " if txt.returncode == 0 else f"maquina 10.10.{room}.{machine} Senha não alterada "
+    stdout = txt.stdout
+    return f"maquina 10.10.{room}.{machine} senha alterada com sucesso | Usuario: {name_user} Senha: {new_password}${room}{machine_password} " if txt.returncode == 0 else f"maquina 10.10.{room}.{machine} Senha não alterada "
 
 def month():
     locale.setlocale(locale.LC_ALL, '')
@@ -59,45 +94,53 @@ def start_password_change():
     else:
         messagebox.showinfo("Erro", "Sala não encontrada")
 
-    
 
-# Criar a janela principal
-window = tk.Tk()
-window.title("Troca de Senha")
-window.geometry("400x300")
+if verify_psexec() == 1:
 
-# Criar os rótulos e campos de entrada
-room_label = tk.Label(window, text="Número da Sala:")
-room_label.pack()
-room_entry = tk.Entry(window)
-room_entry.pack()
 
-start_label = tk.Label(window, text="Máquina Inicial:")
-start_label.pack()
-start_entry = tk.Entry(window)
-start_entry.pack()
+    # Criar a janela principal
+    window = tk.Tk()
+    window.title("Troca de Senha")
+    window.geometry("400x300")
 
-finish_label = tk.Label(window, text="Máquina Final:")
-finish_label.pack()
-finish_entry = tk.Entry(window)
-finish_entry.pack()
 
-user_label = tk.Label(window, text="Tipo de Usuário:")
-user_label.pack()
-user_options = ["Loc", "Student", "Admin"]
-user_var = tk.StringVar(window)
-user_var.set(user_options[0])
-user_dropdown = tk.OptionMenu(window, user_var, *user_options)
-user_dropdown.pack()
+    # Criar os rótulos e campos de entrada
+    room_label = tk.Label(window, text="Número da Sala:")
+    room_label.pack()
+    room_entry = tk.Entry(window)
+    room_entry.pack()
 
-password_label = tk.Label(window, text="Padrão de senha:")
-password_label.pack()
-password_entry = tk.Entry(window)
-password_entry.pack()
+    start_label = tk.Label(window, text="Máquina Inicial:")
+    start_label.pack()
+    start_entry = tk.Entry(window)
+    start_entry.pack()
 
-# Criar o botão de iniciar
-start_button = tk.Button(window, text="Iniciar", command=start_password_change)
-start_button.pack()
+    finish_label = tk.Label(window, text="Máquina Final:")
+    finish_label.pack()
+    finish_entry = tk.Entry(window)
+    finish_entry.pack()
 
-# Iniciar o loop principal da interface gráfica
-window.mainloop()
+    user_label = tk.Label(window, text="Tipo de Usuário:")
+    user_label.pack()
+    user_options = ["Loc", "Student", "Admin"]
+    user_var = tk.StringVar(window)
+    user_var.set(user_options[0])
+    user_dropdown = tk.OptionMenu(window, user_var, *user_options)
+    user_dropdown.pack()
+
+    password_label = tk.Label(window, text="Padrão de senha:")
+    password_label.pack()
+    password_entry = tk.Entry(window)
+    password_entry.pack()
+
+    # Criar o botão de iniciar
+    start_button = tk.Button(window, text="Iniciar", command=start_password_change)
+    start_button.pack()
+
+    # Iniciar o loop principal da interface gráfica
+    window.mainloop()
+
+else:
+    print("Verifique se possui o instalador do PsExec esta na DESKTOP")
+
+#desenvolvido por Anderson Camargo
