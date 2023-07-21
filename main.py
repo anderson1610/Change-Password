@@ -13,7 +13,7 @@ def verify_psexec():
     file_name = 'PsExec.exe'      # Substitua pelo nome do arquivo que deseja verificar
     file_path = os.path.join(specific_folder, file_name)
     path_destination = 'C:/Windows/System32/PsExec.exe'
-    path_psexec = 'C:/Users/Administrator/Desktop/PsExec.exe'
+    path_psexec = 'C:/Users/Administrator/Downloads/PsExec.exe'
 
 
     if os.path.exists(file_path):
@@ -25,7 +25,7 @@ def verify_psexec():
         if os.path.exists(path_psexec):
             print("Arquivo PsExec encontrado")
             # Caminho do arquivo .exe original
-            original_path = 'C:/Users/Administrator/Desktop/PsExec.exe'
+            original_path = 'C:/Users/Administrator/Downloads/PsExec.exe'
 
             # Copiar o arquivo .exe para o destino desejado
             shutil.copy(original_path, path_destination)
@@ -36,7 +36,7 @@ def verify_psexec():
             return 1         
         
         else:
-            messagebox.showinfo("ERRO!", "Coloque o arquivo PsExec.exe na area de trabalho para realizarmos a instalação")
+            messagebox.showinfo("ERRO!", "Coloque o arquivo PsExec.exe na pasta Downloads para realizarmos a instalação")
             return 2
         
 
