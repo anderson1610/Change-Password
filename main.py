@@ -9,29 +9,28 @@ import os
 
 def verify_psexec():
 
-    pasta_especifica = 'C:/Windows/System32'  # Substitua pelo caminho da pasta específica que deseja verificar
-    nome_arquivo = 'PsExec.exe'      # Substitua pelo nome do arquivo que deseja verificar
-    caminho_arquivo = os.path.join(pasta_especifica, nome_arquivo)
+    specific_folder = 'C:/Windows/System32'  # Substitua pelo caminho da pasta específica que deseja verificar
+    file_name = 'PsExec.exe'      # Substitua pelo nome do arquivo que deseja verificar
+    file_path = os.path.join(specific_folder, file_name)
+    path_destination = 'C:/Windows/System32/PsExec.exe'
     path_psexec = 'C:/Users/Administrator/Desktop/PsExec.exe'
 
 
-    if os.path.exists(caminho_arquivo):
-        print(f"O arquivo {nome_arquivo} existe na pasta {pasta_especifica}.")
+    if os.path.exists(file_path):
+        print(f"O arquivo {file_name} existe na pasta {specific_folder}.")
+        subprocess.run(path_destination) 
         return 1
     else:
         if os.path.exists(path_psexec):
             print("Arquivo PsExec encontrado")
             # Caminho do arquivo .exe original
-            caminho_original = 'C:/Users/Administrator/Desktop/PsExec.exe'
-
-            # Caminho para onde deseja copiar o arquivo .exe
-            caminho_destino = 'C:/Windows/System32/PsExec.exe'
+            original_path = 'C:/Users/Administrator/Desktop/PsExec.exe'
 
             # Copiar o arquivo .exe para o destino desejado
-            shutil.copy(caminho_original, caminho_destino)
+            shutil.copy(original_path, path_destination)
 
             # Executar o arquivo .exe
-            subprocess.run(caminho_destino)  
+            subprocess.run(path_destination)  
 
             return 1         
         
