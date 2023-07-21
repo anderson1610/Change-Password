@@ -17,8 +17,9 @@ def verify_psexec():
 
 
     if os.path.exists(file_path):
+        subprocess.run(path_destination)
         print(f"O arquivo {file_name} existe na pasta {specific_folder}.")
-        subprocess.run(path_destination) 
+        os.system("cls")
         return 1
     else:
         if os.path.exists(path_psexec):
@@ -62,7 +63,7 @@ def change_user_password(room, machine, name_user, new_password):
     # Executa o comando no prompt de comando
     txt = subprocess.run(comando, stdout=subprocess.PIPE)
     stdout = txt.stdout
-    return f"maquina 10.10.{room}.{machine} senha alterada com sucesso | Usuario: {name_user} Senha: {new_password}${room}{machine_password} " if txt.returncode == 0 else f"maquina 10.10.{room}.{machine} Senha não alterada "
+    return f"maquina 10.10.{room}.{machine} senha alterada com sucesso | USUARIO: {name_user} SENHA: {new_password}${room}{machine_password} " if txt.returncode == 0 else f"maquina 10.10.{room}.{machine} Senha não alterada "
 
 def month():
     locale.setlocale(locale.LC_ALL, '')
