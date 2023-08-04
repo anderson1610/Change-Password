@@ -20,7 +20,7 @@ def verify_psexec():
         subprocess.run(path_destination)
         print(f"O arquivo {file_name} existe na pasta {specific_folder}.")
         os.system("cls")
-        
+
         return True
     else:
         if os.path.exists(path_psexec):
@@ -153,6 +153,8 @@ if verify_psexec() == True:
     start_button = tk.Button(window, text="Iniciar", command=start_password_change)
     start_button.pack()
 
+    assinatura_label = tk.Label(window, text="Desenvolvido por: Anderson Camargo", fg="gray")
+    assinatura_label.pack(side=tk.BOTTOM, padx=5, pady=5)
     # Iniciar o loop principal da interface gráfica
     window.mainloop()
 
