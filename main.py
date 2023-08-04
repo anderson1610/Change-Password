@@ -141,6 +141,6 @@ if verify_psexec() == 1:
     window.mainloop()
 
 else:
-    print("Verifique se possui o instalador do PsExec esta na DESKTOP")
+    print("Verifique se possui o instalador do PsExec esta na pasta Downloads")
 
 #desenvolvido por Anderson Camargo
