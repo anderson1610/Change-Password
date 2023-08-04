@@ -6,26 +6,34 @@ import tkinter as tk
 from tkinter import messagebox
 import shutil
 import os
+import getpass
+
+def get_username():
+    return getpass.getuser()
+
 
 def verify_psexec():
+
+    name_user = get_username()
 
     specific_folder = 'C:/Windows/System32'  # Substitua pelo caminho da pasta específica que deseja verificar
     file_name = 'PsExec.exe'      # Substitua pelo nome do arquivo que deseja verificar
     file_path = os.path.join(specific_folder, file_name)
     path_destination = 'C:/Windows/System32/PsExec.exe'
-    path_psexec = 'C:/Users/Administrator/Downloads/PsExec.exe'
+    path_psexec = f'C:/Users/{name_user}/Downloads/PsExec.exe'
 
 
     if os.path.exists(file_path):
         subprocess.run(path_destination)
         print(f"O arquivo {file_name} existe na pasta {specific_folder}.")
         os.system("cls")
-        return 1
+
+        return True
     else:
         if os.path.exists(path_psexec):
             print("Arquivo PsExec encontrado")
             # Caminho do arquivo .exe original
-            original_path = 'C:/Users/Administrator/Downloads/PsExec.exe'
+            original_path = f'C:/Users/{name_user}/Downloads/PsExec.exe'
 
             # Copiar o arquivo .exe para o destino desejado
             shutil.copy(original_path, path_destination)
@@ -33,36 +41,52 @@ def verify_psexec():
             # Executar o arquivo .exe
             subprocess.run(path_destination)  
 
-            return 1         
+            return True         
         
         else:
             messagebox.showinfo("ERRO!", "Coloque o arquivo PsExec.exe na pasta Downloads para realizarmos a instalação")
-            return 2
+            return False
         
 
 def create_log_file(name):
+    name_user = get_username()
     current_time = datetime.now()
     month_current = month()
     month_current_number = current_time.month
     month_day_current = current_time.day
     date_today = date.today()
-    log_file = f"C:\\Users\\Administrator\\Desktop\\Log_troca de senha\\{month_current_number:02d}_TrocaDeSenha_{month_current}\\{month_day_current:02d}_Sala{name}_{date_today}.txt"
-    path = Path(f"C:\\Users\\Administrator\\Desktop\\Log_troca de senha\\{month_current_number:02d}_TrocaDeSenha_{month_current}")
+    log_file = f"C:\\Users\\{name_user}\\Desktop\\Log_troca de senha\\{month_current_number:02d}_TrocaDeSenha_{month_current}\\{month_day_current:02d}_Sala{name}_{date_today}.txt"
+    path = Path(f"C:\\Users\\{name_user}\\Desktop\\Log_troca de senha\\{month_current_number:02d}_TrocaDeSenha_{month_current}")
     path.mkdir(parents=True, exist_ok=True)
     return log_file
 
+
+
 def change_user_password(room, machine, name_user, new_password):
-    # Comando para alterar a senha de um usuário no Windows
+    print("----------------------------------------------------------------")
+    print(f"--Conectando na maquina {machine} Sala: {room}--")
+    # user_password para alterar a senha de um usuário no Windows
     if machine <= 9:
         machine_password = f"0{machine}"
     else:
         machine_password = machine
 
-    comando = f"psexec \\\\10.10.{room}.{machine}  net user {name_user} {new_password}${room}{machine_password}"
+    user_password = f"psexec \\\\10.10.{room}.{machine}  net user {name_user} {new_password}${room}{machine_password}"
+    group_rdp = f'psexec \\\\10.10.{room}.{machine}  net localgroup "Remote Desktop Users" {name_user} /add '
 
-    # Executa o comando no prompt de comando
-    txt = subprocess.run(comando, stdout=subprocess.PIPE)
+    # Executa o user_password no prompt de user_password
+    txt = subprocess.run(user_password, stdout=subprocess.PIPE)
+    print(f"Adicionando {name_user} ao grupo RDP... ")
+    txt2 = subprocess.run(group_rdp, stdout=subprocess.PIPE)
+
+    if txt2 == 0:
+        print("Usuario Adicionado")
+    else:
+        print("\n")
+        print("Usuario ja pertence ao grupo")
+
     stdout = txt.stdout
+
     return f"maquina 10.10.{room}.{machine} senha alterada com sucesso | USUARIO: {name_user} SENHA: {new_password}${room}{machine_password} " if txt.returncode == 0 else f"maquina 10.10.{room}.{machine} Senha não alterada "
 
 def month():
@@ -95,7 +119,7 @@ def start_password_change():
         messagebox.showinfo("Erro", "Sala não encontrada")
 
 
-if verify_psexec() == 1:
+if verify_psexec() == True:
 
 
     # Criar a janela principal
@@ -137,6 +161,8 @@ if verify_psexec() == 1:
     start_button = tk.Button(window, text="Iniciar", command=start_password_change)
     start_button.pack()
 
+    assinatura_label = tk.Label(window, text="Desenvolvido por: Anderson Camargo", fg="gray")
+    assinatura_label.pack(side=tk.BOTTOM, padx=5, pady=5)
     # Iniciar o loop principal da interface gráfica
     window.mainloop()
 
