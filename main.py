@@ -20,7 +20,8 @@ def verify_psexec():
         subprocess.run(path_destination)
         print(f"O arquivo {file_name} existe na pasta {specific_folder}.")
         os.system("cls")
-        return 1
+        
+        return True
     else:
         if os.path.exists(path_psexec):
             print("Arquivo PsExec encontrado")
@@ -33,11 +34,11 @@ def verify_psexec():
             # Executar o arquivo .exe
             subprocess.run(path_destination)  
 
-            return 1         
+            return True         
         
         else:
             messagebox.showinfo("ERRO!", "Coloque o arquivo PsExec.exe na pasta Downloads para realizarmos a instalação")
-            return 2
+            return False
         
 
 def create_log_file(name):
@@ -51,18 +52,33 @@ def create_log_file(name):
     path.mkdir(parents=True, exist_ok=True)
     return log_file
 
+
+
 def change_user_password(room, machine, name_user, new_password):
-    # Comando para alterar a senha de um usuário no Windows
+    print("----------------------------------------------------------------")
+    print(f"--Conectando na maquina {machine} Sala: {room}--")
+    # user_password para alterar a senha de um usuário no Windows
     if machine <= 9:
         machine_password = f"0{machine}"
     else:
         machine_password = machine
 
-    comando = f"psexec \\\\10.10.{room}.{machine}  net user {name_user} {new_password}${room}{machine_password}"
+    user_password = f"psexec \\\\10.10.{room}.{machine}  net user {name_user} {new_password}${room}{machine_password}"
+    group_rdp = f'psexec \\\\10.10.{room}.{machine}  net localgroup "Remote Desktop Users" {name_user} /add '
 
-    # Executa o comando no prompt de comando
-    txt = subprocess.run(comando, stdout=subprocess.PIPE)
+    # Executa o user_password no prompt de user_password
+    txt = subprocess.run(user_password, stdout=subprocess.PIPE)
+    print(f"Adicionando {name_user} ao grupo RDP... ")
+    txt2 = subprocess.run(group_rdp, stdout=subprocess.PIPE)
+
+    if txt2 == 0:
+        print("Usuario Adicionado")
+    else:
+        print("\n")
+        print("Usuario ja pertence ao grupo")
+
     stdout = txt.stdout
+
     return f"maquina 10.10.{room}.{machine} senha alterada com sucesso | USUARIO: {name_user} SENHA: {new_password}${room}{machine_password} " if txt.returncode == 0 else f"maquina 10.10.{room}.{machine} Senha não alterada "
 
 def month():
@@ -95,7 +111,7 @@ def start_password_change():
         messagebox.showinfo("Erro", "Sala não encontrada")
 
 
-if verify_psexec() == 1:
+if verify_psexec() == True:
 
 
     # Criar a janela principal
@@ -141,6 +157,6 @@ if verify_psexec() == 1:
     window.mainloop()
 
 else:
-    print("Verifique se possui o instalador do PsExec esta na DESKTOP")
+    print("Verifique se possui o instalador do PsExec esta na pasta Downloads")
 
 #desenvolvido por Anderson Camargo
