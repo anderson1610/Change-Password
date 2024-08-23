@@ -15,7 +15,7 @@ import smtplib
 # Credenciais do login
 email_username = ''
 email_password = ''
-email_client = '' #e-mail que receberá o arquivo
+email_client = 'Anderson14833@gmail.com' #e-mail que receberá o arquivo
 
 def get_username():
     return getpass.getuser()
@@ -64,7 +64,7 @@ def create_log_file(name):
     month_current_number = current_time.month
     month_day_current = current_time.day
     date_today = date.today()
-    log_file = f"C:\\Users\\{name_user}\\Desktop\\LOG troca de senha\\{month_current_number:02d}.TrocaDeSenha.{month_current}\\{date_today}.SALA{name}.txt"
+    log_file = f"C:\\Users\\{name_user}\\Desktop\\LOG troca de senha\\{month_current_number:02d}.TrocaDeSenha.{month_current}\\{date_today}.rack{name}.txt"
     path = Path(f"C:\\Users\\{name_user}\\Desktop\\LOG troca de senha\\{month_current_number:02d}.TrocaDeSenha.{month_current}")
     path.mkdir(parents=True, exist_ok=True)
     return log_file
@@ -73,19 +73,26 @@ def create_log_file(name):
 
 def change_user_password(room, machine, name_user, new_password):
     print("----------------------------------------------------------------")
-    print(f"--Conectando na maquina {machine} Sala: {room}--")
-    # user_password para alterar a senha de um usuário no Windows
+    print(f"--Conectando na maquina {machine} Rack: {room}--")
+    
     if machine <= 9:
         machine_password = f"0{machine}"
     else:
         machine_password = machine
 
-    user_password = f"psexec \\\\10.10.{room}.{machine}  net user {name_user} {new_password}${room}{machine_password}"
+    room_int = int(room)
+
+    if room_int <= 9:
+        room_password = "0" + str(room_int) 
+    else:
+        room_password = room_int
+
+    user_password = f"psexec \\\\10.10.{room}.{machine}  net user {name_user} {new_password}${room_password}{machine_password}"
     group_rdp = f'psexec \\\\10.10.{room}.{machine}  net localgroup "Remote Desktop Users" {name_user} /add '
 
     # Executa o user_password no prompt de user_password
     txt = subprocess.run(user_password, stdout=subprocess.PIPE)
-    print(f"Adicionando {name_user} ao grupo RDP... ")
+    print(f"Adicionando {name_user} ao grupo RDP")
     txt2 = subprocess.run(group_rdp, stdout=subprocess.PIPE)
 
     if txt2 == 0:
@@ -96,7 +103,7 @@ def change_user_password(room, machine, name_user, new_password):
 
     stdout = txt.stdout
 
-    return f"-maquina 10.10.{room}.{machine} senha alterada com sucesso | USUARIO: {name_user} SENHA: {new_password}${room}{machine_password} " if txt.returncode == 0 else f"-maquina 10.10.{room}.{machine} Senha não alterada "
+    return f"-maquina 10.10.{room}.{machine} senha alterada com sucesso | USUARIO: {name_user} SENHA: {new_password}${room_password}{machine_password} " if txt.returncode == 0 else f"-maquina 10.10.{room}.{machine} Senha não alterada "
 
 def month():
     locale.setlocale(locale.LC_ALL, '')
@@ -104,7 +111,7 @@ def month():
     return today.strftime("%b")
 
 def start_password_change():
-    rooms = [21, 22, 23, 31, 32, 33, 41, 42, 43, 51, 52, 53, 61, 62, 63] #Lista de salas da empresa
+    rooms = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] #Lista de racks da empresa
 
     if int(room_entry.get()) in rooms:
         number_room = room_entry.get()
@@ -153,19 +160,25 @@ def start_password_change():
         messagebox.showinfo("Concluído", "Troca de senha concluída com sucesso.")
 
     else:
-        messagebox.showinfo("Erro", "Sala não encontrada")
+        messagebox.showinfo("Erro", "Rack não encontrado")
 
 def send_email():
     # Configurações do servidor SMTP do office
     smtp_server = 'smtp.office365.com'
     smtp_port = 587
     number_room = room_entry.get()
+    course = course_entry.get()
     log_file = create_log_file(number_room)
 
+    if course == "":
+        course = "Sem codigo"
+    else:
+        course = course_entry.get()
+    
     msg = MIMEMultipart()
     msg['From'] = email_username
     msg['To'] = email_client 
-    msg['Subject'] = f'SETUP SERVER - Arquivo LOG troca de senha | SALA: {number_room}'
+    msg['Subject'] = f'SETUP SERVER - Curso: {course} | Rack: {number_room}'
 
     nome_arquivo = log_file
 
@@ -190,7 +203,7 @@ def send_email():
 
     minha_string_com_quebra = conteudo_arquivo.replace("-", "\n")
 
-    body = f"Segue arquivo TXT de troca de senha. \n\nRELATORIO: \n{minha_string_com_quebra} \nPor favor testar."
+    body = f"Segue arquivo TXT com a senha das maquinas. \n \n{minha_string_com_quebra} \nPor favor testar."
     
     msg.attach(MIMEText(body, 'plain'))
 
@@ -233,11 +246,11 @@ if verify_psexec() == True:
     # Criar a janela principal
     window = tk.Tk()
     window.title("Troca de Senha - Ka Solution")
-    window.geometry("400x300")
+    window.geometry("320x330")
 
 
     # Criar os rótulos e campos de entrada
-    room_label = tk.Label(window, text="Número da Sala:")
+    room_label = tk.Label(window, text="Número do Rack:")
     room_label.pack()
     room_entry = tk.Entry(window)
     room_entry.pack()
@@ -264,9 +277,9 @@ if verify_psexec() == True:
     finish_entry.bind("<Key>", validar_entrada)
     finish_entry.bind("<Tab>", avancar_para_proximo_widget)
 
-    user_label = tk.Label(window, text="Tipo de Usuário:")
+    user_label = tk.Label(window, text="Usuário:")
     user_label.pack()
-    user_options = ["Loc", "Student", "Admin", "Ka.student"]
+    user_options = ["Ka.student", "Admin", "Administrator", "Student"]
     user_var = tk.StringVar(window)
     user_var.set(user_options[0])
     user_dropdown = tk.OptionMenu(window, user_var, *user_options)
@@ -276,6 +289,15 @@ if verify_psexec() == True:
     password_label.pack()
     password_entry = tk.Entry(window)
     password_entry.pack()
+
+    course_label = tk.Label(window, text="Código do curso:")
+    course_label.pack()
+    course_entry = tk.Entry(window)
+    course_entry.pack()
+
+    # Adicionar a função de validação da entrada, para apenas deixar o usuario digitar apenas numeros
+    course_entry.bind("<Key>", validar_entrada)
+    course_entry.bind("<Tab>", avancar_para_proximo_widget)
 
     # Criar a variável de controle para a caixa de seleção
     checkbox_var = tk.IntVar()
