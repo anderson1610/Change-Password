@@ -1,14 +1,8 @@
 # Change-Password
-Feito para uso corporativo, na empresa na qual trabalho temos muita demanda de acessar as maquina remotas e realizar a troca de senha de determinado perfil, com esse script podemos acessar o cmd, com o psexec, economizando tempo de trabalho.
+Este script foi desenvolvido para uso corporativo na empresa onde trabalho, onde há uma grande demanda para acessar máquinas remotas e realizar a troca de senha de determinados perfis. Com este script, podemos acessar o CMD usando o PsExec, economizando tempo de trabalho.
 
-Necessario ter conhecimentos basicos de psexec.
-Range de IP muda de acordo com a rede que será utilizado, basta mudar manualmente, variavel 'comando'.
-Para funcionar, a maquina na qual irá rodar o script precisa estar logado em um usuario administrador, que possui nome e senha iguais ao usuario administrador das demais maquinas que será realizada a troca de senha.
-Nome de usuarios, que será mudado a senha, muda conforme sua necessidade, basta mudar manualmente.
+É necessário ter conhecimentos básicos de PsExec. O intervalo de IP muda de acordo com a rede utilizada e pode ser ajustado manualmente na variável ‘comando’. Para que o script funcione, a máquina na qual ele será executado precisa estar logada com um usuário administrador, com nome e senha idênticos ao usuário administrador das demais máquinas onde a troca de senha será realizada. O nome dos usuários, cujas senhas serão alteradas, pode ser ajustado conforme necessário, bastando mudar manualmente.
 
-Caso a maquina não possua o PsExec, basta extrair o aqruivo compactado e colocar na sua area de trabalho(Desktop) que o resto o programa fará. 
+Caso a máquina não possua o PsExec, basta extrair o arquivo compactado e colocá-lo na área de trabalho (Desktop) que o programa fará o restante.
 
-
-
-Qualquer sugestão de melhora pode me contatar, estou com a mente aberta para novos aprendizados.
-Obrigado!
+Qualquer sugestão de melhoria é bem-vinda. Estou aberto a novos aprendizados. Obrigado!
